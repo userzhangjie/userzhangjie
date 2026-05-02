@@ -1,0 +1,1768 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>计算.html | 高级数学计算器</title>
+  <meta name="description" content="集数学计算、微积分、导数和方程求解于一体的单页计算器。">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [["\\(", "\\)"], ["$", "$"]] },
+      svg: { fontCache: "global" }
+    };
+  </script>
+  <style>
+    :root {
+      --ink: #121313;
+      --paper: #f7f2ea;
+      --paper-soft: #ece3d6;
+      --graphite: #232625;
+      --graphite-2: #303331;
+      --line: rgba(18, 19, 19, 0.14);
+      --line-light: rgba(255, 255, 255, 0.16);
+      --mint: #2db6a3;
+      --mint-soft: #c8efe8;
+      --copper: #c47a3c;
+      --gold: #d7b65a;
+      --rose: #c25266;
+      --blue: #4b83a9;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.26);
+      --radius: 8px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --sans: Inter, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      --hero-image: url("https://images.unsplash.com/photo-1635372722656-389f87a941b7?auto=format&fit=crop&fm=jpg&q=78&w=2400");
+      --math-image: url("https://images.unsplash.com/photo-1648201637025-1c77b9be3013?auto=format&fit=crop&fm=jpg&q=78&w=1200");
+      --calc-image: url("https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&fm=jpg&q=78&w=1200");
+      --derivative-image: url("https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?auto=format&fit=crop&fm=jpg&q=78&w=1200");
+      --equation-image: url("https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&fm=jpg&q=78&w=1200");
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: #161817;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--paper);
+      font-family: var(--sans);
+      background:
+        linear-gradient(90deg, rgba(16, 18, 17, 0.96), rgba(16, 18, 17, 0.78) 48%, rgba(16, 18, 17, 0.94)),
+        linear-gradient(180deg, rgba(18, 19, 19, 0.58), rgba(18, 19, 19, 0.97)),
+        var(--hero-image) center / cover fixed;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app-shell {
+      width: min(1500px, calc(100% - 40px));
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 28px 0 30px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.8fr) minmax(520px, 1.9fr) minmax(220px, 0.8fr);
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .brand-block,
+    .status-block,
+    .credit-block {
+      border: 1px solid var(--line-light);
+      background: rgba(20, 22, 21, 0.76);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      border-radius: var(--radius);
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 18px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      color: var(--mint-soft);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .brand-title {
+      margin: 18px 0 0;
+      color: #fffaf0;
+      font-size: 2.15rem;
+      line-height: 1.05;
+      font-weight: 760;
+    }
+
+    .brand-file {
+      margin-top: 12px;
+      color: rgba(247, 242, 234, 0.68);
+      font-family: var(--mono);
+      font-size: 0.86rem;
+    }
+
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 10px;
+    }
+
+    .mode-tab {
+      position: relative;
+      min-height: 96px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 10px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      padding: 14px;
+      color: #fffaf0;
+      text-align: left;
+      background:
+        linear-gradient(180deg, rgba(18, 19, 19, 0.05), rgba(18, 19, 19, 0.88)),
+        var(--tab-image) center / cover;
+      isolation: isolate;
+    }
+
+    .mode-tab::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(14, 16, 15, 0.24);
+      z-index: -1;
+      transition: background 180ms ease;
+    }
+
+    .mode-tab svg {
+      width: 22px;
+      height: 22px;
+      color: var(--mint-soft);
+      filter: drop-shadow(0 5px 18px rgba(0, 0, 0, 0.38));
+    }
+
+    .mode-tab span {
+      font-weight: 740;
+      line-height: 1.2;
+    }
+
+    .mode-tab small {
+      color: rgba(255, 250, 240, 0.7);
+      font-size: 0.72rem;
+    }
+
+    .mode-tab:hover::before,
+    .mode-tab.active::before {
+      background: rgba(14, 16, 15, 0.08);
+    }
+
+    .mode-tab.active {
+      border-color: rgba(200, 239, 232, 0.7);
+      box-shadow: inset 0 0 0 1px rgba(200, 239, 232, 0.18), 0 16px 38px rgba(0, 0, 0, 0.24);
+    }
+
+    .status-block {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      overflow: hidden;
+    }
+
+    .status-cell {
+      min-height: 72px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .status-cell span {
+      display: block;
+      color: rgba(247, 242, 234, 0.62);
+      font-size: 0.76rem;
+    }
+
+    .status-cell strong {
+      display: block;
+      margin-top: 8px;
+      color: #fffaf0;
+      font-family: var(--mono);
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(360px, 0.78fr) minmax(520px, 1.15fr) minmax(360px, 0.82fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line-light);
+      border-radius: var(--radius);
+      background: rgba(247, 242, 234, 0.92);
+      color: var(--ink);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel.dark {
+      background: rgba(22, 24, 23, 0.84);
+      color: var(--paper);
+      backdrop-filter: blur(16px);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel.dark .panel-header {
+      border-bottom-color: var(--line-light);
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 780;
+    }
+
+    .panel-title svg {
+      width: 20px;
+      height: 20px;
+      color: var(--mint);
+    }
+
+    .panel-body {
+      padding: 18px;
+    }
+
+    .calc-mode {
+      display: none;
+    }
+
+    .calc-mode.active {
+      display: block;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .two-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .three-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: rgba(18, 19, 19, 0.68);
+      font-size: 0.78rem;
+      font-weight: 720;
+    }
+
+    .panel.dark label {
+      color: rgba(247, 242, 234, 0.72);
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid rgba(18, 19, 19, 0.14);
+      border-radius: var(--radius);
+      outline: none;
+      color: var(--ink);
+      background: rgba(255, 252, 246, 0.88);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    input,
+    select {
+      height: 42px;
+      padding: 0 12px;
+    }
+
+    textarea {
+      min-height: 116px;
+      resize: vertical;
+      padding: 12px;
+      line-height: 1.45;
+      font-family: var(--mono);
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: rgba(45, 182, 163, 0.72);
+      box-shadow: 0 0 0 4px rgba(45, 182, 163, 0.14);
+      background: #fffdfa;
+    }
+
+    .panel.dark input,
+    .panel.dark textarea,
+    .panel.dark select {
+      border-color: rgba(255, 255, 255, 0.14);
+      color: var(--paper);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .panel.dark input:focus,
+    .panel.dark textarea:focus,
+    .panel.dark select:focus {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      border: 1px solid rgba(18, 19, 19, 0.12);
+      border-radius: var(--radius);
+      padding: 0 14px;
+      color: var(--ink);
+      background: #fffaf0;
+      font-weight: 760;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(45, 182, 163, 0.5);
+    }
+
+    .btn.primary {
+      color: #081b18;
+      background: var(--mint-soft);
+      border-color: rgba(45, 182, 163, 0.28);
+    }
+
+    .btn.dark {
+      color: var(--paper);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .btn.copper {
+      color: #21140c;
+      background: #efd0ae;
+      border-color: rgba(196, 122, 60, 0.34);
+    }
+
+    .btn.rose {
+      color: #fff8f8;
+      background: var(--rose);
+      border-color: rgba(194, 82, 102, 0.5);
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+      flex: none;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      border: 1px solid rgba(18, 19, 19, 0.14);
+      border-radius: 999px;
+      padding: 8px 10px;
+      color: rgba(18, 19, 19, 0.78);
+      background: rgba(255, 255, 255, 0.62);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+    }
+
+    .panel.dark .chip {
+      color: rgba(247, 242, 234, 0.76);
+      border-color: rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .result-panel {
+      min-height: 650px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .result-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .result-main {
+      min-height: 154px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.035)),
+        rgba(0, 0, 0, 0.16);
+      padding: 16px;
+    }
+
+    .result-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: rgba(247, 242, 234, 0.62);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      margin-bottom: 12px;
+    }
+
+    .result-value {
+      min-height: 48px;
+      color: #fffaf0;
+      font-family: var(--mono);
+      font-size: 1.22rem;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .math-render {
+      margin-top: 12px;
+      color: var(--mint-soft);
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .meta-tile {
+      min-height: 92px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      padding: 13px;
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .meta-tile span {
+      display: block;
+      color: rgba(247, 242, 234, 0.58);
+      font-size: 0.72rem;
+      margin-bottom: 8px;
+    }
+
+    .meta-tile strong {
+      display: block;
+      color: #fffaf0;
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      line-height: 1.38;
+      overflow-wrap: anywhere;
+    }
+
+    .steps {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .steps li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px;
+      border-radius: var(--radius);
+      color: rgba(247, 242, 234, 0.78);
+      background: rgba(255, 255, 255, 0.055);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.86rem;
+    }
+
+    .steps svg {
+      width: 16px;
+      height: 16px;
+      margin-top: 2px;
+      color: var(--gold);
+      flex: none;
+    }
+
+    .plot-wrap {
+      margin-top: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: var(--radius);
+      background: rgba(0, 0, 0, 0.18);
+      overflow: hidden;
+    }
+
+    .plot-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      color: rgba(247, 242, 234, 0.64);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.75rem;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 240px;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .history-item {
+      display: grid;
+      gap: 7px;
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: var(--radius);
+      padding: 12px;
+      color: var(--paper);
+      background: rgba(255, 255, 255, 0.06);
+      text-align: left;
+    }
+
+    .history-item:hover {
+      border-color: rgba(200, 239, 232, 0.45);
+    }
+
+    .history-item span {
+      color: rgba(247, 242, 234, 0.58);
+      font-size: 0.72rem;
+    }
+
+    .history-item strong {
+      font-family: var(--mono);
+      font-size: 0.84rem;
+      line-height: 1.38;
+      overflow-wrap: anywhere;
+    }
+
+    .side-art {
+      aspect-ratio: 1.2 / 1;
+      min-height: 210px;
+      margin-bottom: 18px;
+      border: 1px solid var(--line-light);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(18, 19, 19, 0.06), rgba(18, 19, 19, 0.84)),
+        var(--mode-art, var(--math-image)) center / cover;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .side-art-badge {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: rgba(255, 250, 240, 0.86);
+      font-size: 0.78rem;
+    }
+
+    .side-art-badge strong {
+      color: #fffaf0;
+      font-size: 1rem;
+    }
+
+    .source-links {
+      margin-top: 18px;
+      display: grid;
+      gap: 8px;
+      color: rgba(247, 242, 234, 0.58);
+      font-size: 0.74rem;
+      line-height: 1.5;
+    }
+
+    .source-links a {
+      color: var(--mint-soft);
+      text-decoration: none;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      z-index: 20;
+      max-width: min(520px, calc(100% - 36px));
+      transform: translate(-50%, 120px);
+      opacity: 0;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      color: var(--paper);
+      background: rgba(18, 19, 19, 0.94);
+      box-shadow: var(--shadow);
+      transition: transform 220ms ease, opacity 220ms ease;
+    }
+
+    .toast.show {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 1240px) {
+      .topbar,
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .result-panel {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app-shell {
+        width: min(100% - 24px, 1500px);
+        padding-top: 14px;
+      }
+
+      .mode-tabs {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .mode-tab {
+        min-height: 86px;
+      }
+
+      .brand-title {
+        font-size: 1.68rem;
+      }
+
+      .two-cols,
+      .three-cols,
+      .meta-grid,
+      .status-block {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <section class="brand-block" aria-label="应用标题">
+        <span class="eyebrow"><i data-lucide="sparkles"></i> CAS WORKBENCH</span>
+        <h1 class="brand-title">计算实验室</h1>
+        <div class="brand-file">计算.html</div>
+      </section>
+
+      <nav class="mode-tabs" aria-label="计算功能">
+        <button class="mode-tab active" type="button" data-mode="math" style="--tab-image: var(--math-image)">
+          <i data-lucide="calculator"></i>
+          <span>数学计算</span>
+          <small>Numeric</small>
+        </button>
+        <button class="mode-tab" type="button" data-mode="calculus" style="--tab-image: var(--calc-image)">
+          <i data-lucide="integral"></i>
+          <span>微积分计算</span>
+          <small>Integral / Limit</small>
+        </button>
+        <button class="mode-tab" type="button" data-mode="derivative" style="--tab-image: var(--derivative-image)">
+          <i data-lucide="sigma"></i>
+          <span>导数计算</span>
+          <small>Derivative</small>
+        </button>
+        <button class="mode-tab" type="button" data-mode="equation" style="--tab-image: var(--equation-image)">
+          <i data-lucide="equal"></i>
+          <span>方程计算</span>
+          <small>Equation</small>
+        </button>
+      </nav>
+
+      <section class="status-block" aria-label="计算状态">
+        <div class="status-cell">
+          <span>引擎</span>
+          <strong id="engineStatus">加载中</strong>
+        </div>
+        <div class="status-cell">
+          <span>历史</span>
+          <strong id="historyCount">0</strong>
+        </div>
+        <div class="status-cell">
+          <span>模式</span>
+          <strong id="modeStatus">数学</strong>
+        </div>
+        <div class="status-cell">
+          <span>精度</span>
+          <strong>14 digits</strong>
+        </div>
+      </section>
+    </header>
+
+    <main class="workspace">
+      <section class="panel" aria-label="输入区">
+        <div class="panel-header">
+          <h2 class="panel-title"><i data-lucide="sliders-horizontal"></i><span id="inputTitle">数学计算</span></h2>
+          <button class="btn" type="button" id="resetModeBtn"><i data-lucide="rotate-ccw"></i>重置</button>
+        </div>
+        <div class="panel-body">
+          <form class="calc-mode active" id="mode-math" data-mode="math">
+            <div class="form-grid">
+              <label>
+                表达式
+                <textarea id="mathExpr" spellcheck="false">sqrt(81)+sin(pi/6)^2+log(100,10)</textarea>
+              </label>
+              <label>
+                变量
+                <input id="mathScope" type="text" value="x=3, y=4" spellcheck="false">
+              </label>
+              <div class="action-row">
+                <button class="btn primary" type="button" data-action="calculate-math"><i data-lucide="play"></i>计算</button>
+                <button class="btn copper" type="button" data-action="simplify-math"><i data-lucide="wand-sparkles"></i>化简</button>
+              </div>
+              <div class="chips" data-chip-target="mathExpr">
+                <button class="chip" type="button" data-chip="(2+3)^4 / 5">\(2+3)^4/5</button>
+                <button class="chip" type="button" data-chip="det([[1,2],[3,4]])">det()</button>
+                <button class="chip" type="button" data-chip="gcd(84, 126)">gcd()</button>
+                <button class="chip" type="button" data-chip="mean([12,15,18,24])">mean()</button>
+              </div>
+            </div>
+          </form>
+
+          <form class="calc-mode" id="mode-calculus" data-mode="calculus">
+            <div class="form-grid">
+              <label>
+                函数
+                <textarea id="calcExpr" spellcheck="false">sin(x)^2 + x^3/3</textarea>
+              </label>
+              <div class="two-cols">
+                <label>
+                  运算
+                  <select id="calcOperation">
+                    <option value="integral">不定积分</option>
+                    <option value="definite">定积分</option>
+                    <option value="limit">极限</option>
+                  </select>
+                </label>
+                <label>
+                  变量
+                  <input id="calcVar" type="text" value="x" spellcheck="false">
+                </label>
+              </div>
+              <div class="three-cols">
+                <label>
+                  下限
+                  <input id="calcLower" type="text" value="0" spellcheck="false">
+                </label>
+                <label>
+                  上限
+                  <input id="calcUpper" type="text" value="pi" spellcheck="false">
+                </label>
+                <label>
+                  趋近
+                  <input id="calcLimitPoint" type="text" value="0" spellcheck="false">
+                </label>
+              </div>
+              <div class="action-row">
+                <button class="btn primary" type="button" data-action="calculate-calculus"><i data-lucide="play"></i>计算</button>
+                <button class="btn copper" type="button" data-action="plot-calculus"><i data-lucide="chart-no-axes-combined"></i>绘图</button>
+              </div>
+              <div class="chips" data-chip-target="calcExpr">
+                <button class="chip" type="button" data-chip="sin(x)/x">lim sin(x)/x</button>
+                <button class="chip" type="button" data-chip="x^2 * e^x">x^2 e^x</button>
+                <button class="chip" type="button" data-chip="1/(1+x^2)">1/(1+x^2)</button>
+              </div>
+            </div>
+          </form>
+
+          <form class="calc-mode" id="mode-derivative" data-mode="derivative">
+            <div class="form-grid">
+              <label>
+                函数
+                <textarea id="derivativeExpr" spellcheck="false">x^4 - 3*x^2 + sin(x)</textarea>
+              </label>
+              <div class="three-cols">
+                <label>
+                  变量
+                  <input id="derivativeVar" type="text" value="x" spellcheck="false">
+                </label>
+                <label>
+                  阶数
+                  <input id="derivativeOrder" type="number" min="1" max="8" step="1" value="1">
+                </label>
+                <label>
+                  点
+                  <input id="derivativePoint" type="text" value="2" spellcheck="false">
+                </label>
+              </div>
+              <div class="action-row">
+                <button class="btn primary" type="button" data-action="calculate-derivative"><i data-lucide="play"></i>求导</button>
+                <button class="btn copper" type="button" data-action="tangent-derivative"><i data-lucide="move-up-right"></i>切线</button>
+              </div>
+              <div class="chips" data-chip-target="derivativeExpr">
+                <button class="chip" type="button" data-chip="ln(x)*sin(x)">ln(x)sin(x)</button>
+                <button class="chip" type="button" data-chip="e^(2*x)+x^3">e^(2x)+x^3</button>
+                <button class="chip" type="button" data-chip="tan(x)/(1+x^2)">tan(x)/(1+x^2)</button>
+              </div>
+            </div>
+          </form>
+
+          <form class="calc-mode" id="mode-equation" data-mode="equation">
+            <div class="form-grid">
+              <label>
+                方程
+                <textarea id="equationExpr" spellcheck="false">x^2 - 5*x + 6 = 0</textarea>
+              </label>
+              <label>
+                未知量
+                <input id="equationVars" type="text" value="x" spellcheck="false">
+              </label>
+              <div class="action-row">
+                <button class="btn primary" type="button" data-action="solve-equation"><i data-lucide="play"></i>求解</button>
+                <button class="btn copper" type="button" data-action="factor-equation"><i data-lucide="brackets"></i>因式</button>
+              </div>
+              <div class="chips" data-chip-target="equationExpr">
+                <button class="chip" type="button" data-chip="x^4 = 1">x^4=1</button>
+                <button class="chip" type="button" data-chip="2*x-y=8&#10;10*x+7*y-z=53&#10;4*z+y=6">system</button>
+                <button class="chip" type="button" data-chip="cos(x)+cos(3*x)=1">cos</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="panel dark result-panel" aria-label="结果区">
+        <div class="panel-header">
+          <h2 class="panel-title"><i data-lucide="activity"></i><span>结果</span></h2>
+          <div class="action-row">
+            <button class="btn dark" type="button" id="copyResultBtn"><i data-lucide="copy"></i>复制</button>
+            <button class="btn dark" type="button" id="clearResultBtn"><i data-lucide="eraser"></i>清空</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="result-stack">
+            <div class="result-main">
+              <div class="result-label">
+                <span id="resultKind">READY</span>
+                <span id="resultTime">--</span>
+              </div>
+              <div class="result-value" id="resultValue">选择一个功能开始计算。</div>
+              <div class="math-render" id="mathRender"></div>
+            </div>
+            <div class="meta-grid">
+              <div class="meta-tile">
+                <span>解析</span>
+                <strong id="symbolicValue">--</strong>
+              </div>
+              <div class="meta-tile">
+                <span>数值</span>
+                <strong id="numericValue">--</strong>
+              </div>
+            </div>
+            <div class="plot-wrap">
+              <div class="plot-header">
+                <span id="plotTitle">函数图像</span>
+                <span>-8 <= x <= 8</span>
+              </div>
+              <canvas id="plotCanvas" width="960" height="420" aria-label="函数图像"></canvas>
+            </div>
+            <ul class="steps" id="stepsList" aria-label="计算步骤"></ul>
+          </div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="side-art" id="sideArt" aria-label="数学配图">
+          <div class="side-art-badge">
+            <strong id="sideArtTitle">数学计算</strong>
+            <span>Unsplash</span>
+          </div>
+        </div>
+        <section class="panel dark credit-block" aria-label="历史记录">
+          <div class="panel-header">
+            <h2 class="panel-title"><i data-lucide="history"></i><span>历史</span></h2>
+            <button class="btn dark" type="button" id="clearHistoryBtn"><i data-lucide="trash-2"></i>清除</button>
+          </div>
+          <div class="panel-body">
+            <div class="history-list" id="historyList"></div>
+            <div class="source-links">
+              <span>素材来源：<a href="https://unsplash.com/s/photos/math" target="_blank" rel="noreferrer">Unsplash Math</a>、<a href="https://unsplash.com/s/photos/calculator" target="_blank" rel="noreferrer">Unsplash Calculator</a></span>
+              <span>计算引擎：<a href="https://mathjs.org/docs/reference/functions/derivative.html" target="_blank" rel="noreferrer">math.js</a>、<a href="https://nerdamer.com/documentation.html" target="_blank" rel="noreferrer">Nerdamer</a></span>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjs@15.2.0/lib/browser/math.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/all.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script>
+    const app = {
+      mode: "math",
+      lastResult: "",
+      history: [],
+      art: {
+        math: { title: "数学计算", image: "var(--math-image)" },
+        calculus: { title: "微积分计算", image: "var(--calc-image)" },
+        derivative: { title: "导数计算", image: "var(--derivative-image)" },
+        equation: { title: "方程计算", image: "var(--equation-image)" }
+      },
+      names: {
+        math: "数学计算",
+        calculus: "微积分计算",
+        derivative: "导数计算",
+        equation: "方程计算"
+      }
+    };
+
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+
+    const elements = {
+      engineStatus: $("#engineStatus"),
+      historyCount: $("#historyCount"),
+      modeStatus: $("#modeStatus"),
+      inputTitle: $("#inputTitle"),
+      resultKind: $("#resultKind"),
+      resultTime: $("#resultTime"),
+      resultValue: $("#resultValue"),
+      mathRender: $("#mathRender"),
+      symbolicValue: $("#symbolicValue"),
+      numericValue: $("#numericValue"),
+      stepsList: $("#stepsList"),
+      plotTitle: $("#plotTitle"),
+      canvas: $("#plotCanvas"),
+      historyList: $("#historyList"),
+      sideArt: $("#sideArt"),
+      sideArtTitle: $("#sideArtTitle"),
+      toast: $("#toast")
+    };
+
+    function boot() {
+      app.history = loadHistory();
+      bindEvents();
+      setMode("math");
+      renderHistory();
+      drawEmptyPlot();
+      refreshEngineStatus();
+      if (window.lucide) lucide.createIcons();
+      setTimeout(refreshEngineStatus, 900);
+    }
+
+    function bindEvents() {
+      $$(".mode-tab").forEach((button) => {
+        button.addEventListener("click", () => setMode(button.dataset.mode));
+      });
+
+      $$("[data-action]").forEach((button) => {
+        button.addEventListener("click", () => runAction(button.dataset.action));
+      });
+
+      $$(".chips").forEach((group) => {
+        group.addEventListener("click", (event) => {
+          const chip = event.target.closest("[data-chip]");
+          if (!chip) return;
+          const target = document.getElementById(group.dataset.chipTarget);
+          if (!target) return;
+          target.value = chip.dataset.chip;
+          target.focus();
+        });
+      });
+
+      $("#copyResultBtn").addEventListener("click", copyResult);
+      $("#clearResultBtn").addEventListener("click", clearResult);
+      $("#clearHistoryBtn").addEventListener("click", clearHistory);
+      $("#resetModeBtn").addEventListener("click", resetMode);
+    }
+
+    function refreshEngineStatus() {
+      const ready = Boolean(window.math && window.nerdamer);
+      elements.engineStatus.textContent = ready ? "就绪" : "离线";
+      if (!ready) {
+        showToast("计算库还没有加载完成，稍等片刻或检查网络。");
+      }
+    }
+
+    function requireEngines() {
+      if (!window.math || !window.nerdamer) {
+        throw new Error("计算库尚未加载完成。");
+      }
+    }
+
+    function setMode(mode) {
+      app.mode = mode;
+      $$(".mode-tab").forEach((button) => button.classList.toggle("active", button.dataset.mode === mode));
+      $$(".calc-mode").forEach((form) => form.classList.toggle("active", form.dataset.mode === mode));
+      elements.modeStatus.textContent = app.names[mode].replace("计算", "");
+      elements.inputTitle.textContent = app.names[mode];
+      elements.sideArtTitle.textContent = app.art[mode].title;
+      elements.sideArt.style.setProperty("--mode-art", app.art[mode].image);
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function runAction(action) {
+      try {
+        requireEngines();
+        const actionMap = {
+          "calculate-math": calculateMath,
+          "simplify-math": simplifyMath,
+          "calculate-calculus": calculateCalculus,
+          "plot-calculus": plotCalculus,
+          "calculate-derivative": calculateDerivative,
+          "tangent-derivative": calculateTangent,
+          "solve-equation": solveEquation,
+          "factor-equation": factorEquation
+        };
+        actionMap[action]();
+      } catch (error) {
+        showError(error);
+      }
+    }
+
+    function parseScope(text) {
+      const scope = {};
+      if (!text.trim()) return scope;
+      text.split(/[,\n;]/).map((item) => item.trim()).filter(Boolean).forEach((pair) => {
+        const [name, ...rest] = pair.split("=");
+        const key = (name || "").trim();
+        if (!/^[A-Za-z_]\w*$/.test(key)) return;
+        const value = rest.join("=").trim();
+        if (value) scope[key] = math.evaluate(value, scope);
+      });
+      return scope;
+    }
+
+    function cleanExpression(text) {
+      const value = text.trim();
+      if (!value) throw new Error("表达式不能为空。");
+      return value;
+    }
+
+    function cleanVariable(text) {
+      const value = text.trim() || "x";
+      if (!/^[A-Za-z_]\w*$/.test(value)) throw new Error("变量名只能使用字母、数字和下划线，并且不能以数字开头。");
+      return value;
+    }
+
+    function parseVariables(text) {
+      return text.split(/[,\s]+/).map((item) => item.trim()).filter(Boolean).map(cleanVariable);
+    }
+
+    function toDisplay(value) {
+      if (value === undefined || value === null || value === "") return "--";
+      if (Array.isArray(value)) return value.join(", ");
+      if (typeof value === "number") return math.format(value, { precision: 14 });
+      return String(value);
+    }
+
+    function calculateMath() {
+      const expr = cleanExpression($("#mathExpr").value);
+      const scope = parseScope($("#mathScope").value);
+      const value = math.evaluate(expr, scope);
+      const formatted = math.format(value, { precision: 14 });
+      let simplified = "--";
+      try {
+        simplified = math.simplify(expr).toString();
+      } catch (error) {
+        simplified = "无法符号化简";
+      }
+      setResult({
+        kind: "数学计算",
+        value: formatted,
+        symbolic: simplified,
+        numeric: formatted,
+        tex: toMathTex(simplified),
+        steps: [
+          `解析表达式：${expr}`,
+          `变量环境：${Object.keys(scope).length ? JSON.stringify(scope) : "无"}`,
+          `结果精度：14 位有效数字`
+        ],
+        plot: [{ expression: expr, variable: "x", color: "#2db6a3", label: "f(x)" }]
+      });
+      saveHistory("数学", expr, formatted);
+    }
+
+    function simplifyMath() {
+      const expr = cleanExpression($("#mathExpr").value);
+      const simplified = math.simplify(expr).toString();
+      setResult({
+        kind: "数学化简",
+        value: simplified,
+        symbolic: simplified,
+        numeric: tryEvaluate(simplified),
+        tex: toMathTex(simplified),
+        steps: [`原式：${expr}`, `化简：${simplified}`],
+        plot: [{ expression: simplified, variable: "x", color: "#2db6a3", label: "f(x)" }]
+      });
+      saveHistory("化简", expr, simplified);
+    }
+
+    function calculateCalculus() {
+      const expr = cleanExpression($("#calcExpr").value);
+      const variable = cleanVariable($("#calcVar").value);
+      const operation = $("#calcOperation").value;
+      const lower = cleanExpression($("#calcLower").value);
+      const upper = cleanExpression($("#calcUpper").value);
+      const point = cleanExpression($("#calcLimitPoint").value);
+      let result = "";
+      let numeric = "--";
+      let kind = "微积分计算";
+      const steps = [`函数：${expr}`, `变量：${variable}`];
+
+      if (operation === "integral") {
+        result = nerdamer(`integrate(${expr}, ${variable})`).toString();
+        kind = "不定积分";
+        steps.push("符号积分：Nerdamer integrate()");
+      }
+
+      if (operation === "definite") {
+        result = nerdamer(`defint(${expr}, ${lower}, ${upper}, ${variable})`).toString();
+        numeric = numericalIntegral(expr, variable, lower, upper);
+        kind = "定积分";
+        steps.push(`区间：[${lower}, ${upper}]`);
+        steps.push("数值校验：Simpson 复合积分");
+      }
+
+      if (operation === "limit") {
+        result = nerdamer(`limit(${expr}, ${variable}, ${point})`).toString();
+        numeric = tryEvaluate(result);
+        kind = "极限";
+        steps.push(`${variable} -> ${point}`);
+      }
+
+      setResult({
+        kind,
+        value: result,
+        symbolic: result,
+        numeric,
+        tex: toNerdamerTex(result),
+        steps,
+        plot: [{ expression: expr, variable, color: "#d7b65a", label: "f(x)" }]
+      });
+      saveHistory(kind, expr, result);
+    }
+
+    function plotCalculus() {
+      const expr = cleanExpression($("#calcExpr").value);
+      const variable = cleanVariable($("#calcVar").value);
+      drawPlot([{ expression: expr, variable, color: "#d7b65a", label: "f(x)" }], "微积分函数");
+      showToast("图像已更新。");
+    }
+
+    function calculateDerivative() {
+      const expr = cleanExpression($("#derivativeExpr").value);
+      const variable = cleanVariable($("#derivativeVar").value);
+      const order = Math.max(1, Math.min(8, Number($("#derivativeOrder").value) || 1));
+      const point = cleanExpression($("#derivativePoint").value);
+      const derivative = nerdamer(`diff(${expr}, ${variable}, ${order})`).toString();
+      const scope = { [variable]: math.evaluate(point) };
+      const pointValue = tryEvaluate(derivative, scope);
+      const steps = [
+        `函数：${expr}`,
+        `阶数：${order}`,
+        `${variable}=${point} 时导数值：${pointValue}`
+      ];
+      setResult({
+        kind: `${order} 阶导数`,
+        value: derivative,
+        symbolic: derivative,
+        numeric: pointValue,
+        tex: toNerdamerTex(derivative),
+        steps,
+        plot: [
+          { expression: expr, variable, color: "#4b83a9", label: "f(x)" },
+          { expression: derivative, variable, color: "#c25266", label: "f'(x)" }
+        ]
+      });
+      saveHistory("导数", expr, derivative);
+    }
+
+    function calculateTangent() {
+      const expr = cleanExpression($("#derivativeExpr").value);
+      const variable = cleanVariable($("#derivativeVar").value);
+      const pointRaw = cleanExpression($("#derivativePoint").value);
+      const a = Number(math.evaluate(pointRaw));
+      if (!Number.isFinite(a)) throw new Error("切点必须能转换为有限数值。");
+      const derivative = nerdamer(`diff(${expr}, ${variable}, 1)`).toString();
+      const scope = { [variable]: a };
+      const y = Number(math.evaluate(expr, scope));
+      const slope = Number(math.evaluate(derivative, scope));
+      if (!Number.isFinite(y) || !Number.isFinite(slope)) throw new Error("切线无法在该点得到有限值。");
+      const intercept = y - slope * a;
+      const tangent = `${math.format(slope, { precision: 10 })}*${variable}+${math.format(intercept, { precision: 10 })}`;
+      setResult({
+        kind: "切线",
+        value: `y = ${formatLinear(slope, intercept, variable)}`,
+        symbolic: derivative,
+        numeric: `f(${a})=${math.format(y, { precision: 10 })}`,
+        tex: `\\(y=${toMathTex(formatLinear(slope, intercept, variable))}\\)`,
+        steps: [
+          `切点：${variable}=${a}`,
+          `函数值：${math.format(y, { precision: 10 })}`,
+          `斜率：${math.format(slope, { precision: 10 })}`
+        ],
+        plot: [
+          { expression: expr, variable, color: "#4b83a9", label: "f(x)" },
+          { expression: tangent, variable, color: "#c25266", label: "tangent" }
+        ]
+      });
+      saveHistory("切线", expr, `y=${formatLinear(slope, intercept, variable)}`);
+    }
+
+    function solveEquation() {
+      const raw = cleanExpression($("#equationExpr").value);
+      const equations = raw.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+      const variables = parseVariables($("#equationVars").value);
+      if (!variables.length) throw new Error("至少提供一个未知量。");
+
+      let result;
+      const steps = [`方程数量：${equations.length}`, `未知量：${variables.join(", ")}`];
+      if (equations.length === 1 && variables.length === 1) {
+        result = nerdamer.solve(equations[0], variables[0]).toString();
+        steps.push("单方程求解：solve()");
+      } else {
+        nerdamer.set("SOLUTIONS_AS_OBJECT", true);
+        result = nerdamer.solveEquations(equations, variables);
+        result = typeof result === "string" ? result : JSON.stringify(result, null, 2);
+        nerdamer.set("SOLUTIONS_AS_OBJECT", false);
+        steps.push("方程组求解：solveEquations()");
+      }
+
+      const plotExpression = normalizeEquationForPlot(equations[0]);
+      setResult({
+        kind: "方程求解",
+        value: result,
+        symbolic: plotExpression,
+        numeric: numericalRoots(plotExpression, variables[0]),
+        tex: toMathTex(result),
+        steps,
+        plot: [{ expression: plotExpression, variable: variables[0], color: "#2db6a3", label: "left-right" }]
+      });
+      saveHistory("方程", raw, result);
+    }
+
+    function factorEquation() {
+      const raw = cleanExpression($("#equationExpr").value);
+      const expr = normalizeEquationForPlot(raw.split(/\n+/)[0]);
+      const variable = parseVariables($("#equationVars").value)[0] || "x";
+      const factored = nerdamer(`factor(${expr})`).toString();
+      setResult({
+        kind: "因式分解",
+        value: factored,
+        symbolic: factored,
+        numeric: numericalRoots(expr, variable),
+        tex: toNerdamerTex(factored),
+        steps: [`零式：${expr}`, `因式：${factored}`],
+        plot: [{ expression: expr, variable, color: "#2db6a3", label: "left-right" }]
+      });
+      saveHistory("因式", raw, factored);
+    }
+
+    function normalizeEquationForPlot(equation) {
+      const text = equation.trim();
+      const eqIndex = text.indexOf("=");
+      if (eqIndex === -1) return text;
+      const left = text.slice(0, eqIndex).trim();
+      const right = text.slice(eqIndex + 1).trim();
+      return `(${left})-(${right})`;
+    }
+
+    function numericalIntegral(expr, variable, lowerText, upperText) {
+      const a = Number(math.evaluate(lowerText));
+      const b = Number(math.evaluate(upperText));
+      if (!Number.isFinite(a) || !Number.isFinite(b)) return "--";
+      const compiled = math.compile(expr);
+      const n = 600;
+      const h = (b - a) / n;
+      let sum = 0;
+      for (let i = 0; i <= n; i += 1) {
+        const x = a + i * h;
+        const weight = i === 0 || i === n ? 1 : i % 2 === 0 ? 2 : 4;
+        const value = Number(compiled.evaluate({ [variable]: x }));
+        if (!Number.isFinite(value)) return "--";
+        sum += weight * value;
+      }
+      return math.format((h / 3) * sum, { precision: 14 });
+    }
+
+    function numericalRoots(expr, variable) {
+      try {
+        const compiled = math.compile(expr);
+        const roots = [];
+        const min = -30;
+        const max = 30;
+        const step = 0.2;
+        let prevX = min;
+        let prevY = Number(compiled.evaluate({ [variable]: prevX }));
+        for (let x = min + step; x <= max; x += step) {
+          const y = Number(compiled.evaluate({ [variable]: x }));
+          if (Number.isFinite(prevY) && Number.isFinite(y)) {
+            if (Math.abs(y) < 1e-7) addUniqueRoot(roots, x);
+            if (prevY * y < 0) addUniqueRoot(roots, bisect(compiled, variable, prevX, x));
+          }
+          prevX = x;
+          prevY = y;
+        }
+        return roots.length ? roots.map((root) => math.format(root, { precision: 10 })).join(", ") : "--";
+      } catch (error) {
+        return "--";
+      }
+    }
+
+    function addUniqueRoot(roots, value) {
+      if (!Number.isFinite(value)) return;
+      if (!roots.some((root) => Math.abs(root - value) < 1e-5)) roots.push(value);
+    }
+
+    function bisect(compiled, variable, left, right) {
+      let a = left;
+      let b = right;
+      let fa = Number(compiled.evaluate({ [variable]: a }));
+      for (let i = 0; i < 80; i += 1) {
+        const mid = (a + b) / 2;
+        const fm = Number(compiled.evaluate({ [variable]: mid }));
+        if (!Number.isFinite(fm) || Math.abs(fm) < 1e-10) return mid;
+        if (fa * fm <= 0) {
+          b = mid;
+        } else {
+          a = mid;
+          fa = fm;
+        }
+      }
+      return (a + b) / 2;
+    }
+
+    function tryEvaluate(expr, scope = {}) {
+      try {
+        const value = math.evaluate(expr, scope);
+        return math.format(value, { precision: 14 });
+      } catch (error) {
+        try {
+          return nerdamer(expr).evaluate(scope).text("decimals");
+        } catch (innerError) {
+          return "--";
+        }
+      }
+    }
+
+    function toNerdamerTex(expr) {
+      try {
+        return `\\(${nerdamer(expr).toTeX()}\\)`;
+      } catch (error) {
+        return toMathTex(expr);
+      }
+    }
+
+    function toMathTex(expr) {
+      try {
+        return `\\(${math.parse(String(expr)).toTex()}\\)`;
+      } catch (error) {
+        return `\\(${escapeTex(String(expr))}\\)`;
+      }
+    }
+
+    function escapeTex(text) {
+      return text.replace(/[\\{}_$%&#]/g, (char) => `\\${char}`);
+    }
+
+    function formatLinear(slope, intercept, variable) {
+      const m = math.format(slope, { precision: 10 });
+      const b = math.format(Math.abs(intercept), { precision: 10 });
+      const sign = intercept >= 0 ? "+" : "-";
+      return `${m}${variable} ${sign} ${b}`;
+    }
+
+    function setResult(payload) {
+      const now = new Date();
+      app.lastResult = toDisplay(payload.value);
+      elements.resultKind.textContent = payload.kind.toUpperCase();
+      elements.resultTime.textContent = now.toLocaleTimeString("zh-CN", { hour12: false });
+      elements.resultValue.textContent = toDisplay(payload.value);
+      elements.symbolicValue.textContent = toDisplay(payload.symbolic);
+      elements.numericValue.textContent = toDisplay(payload.numeric);
+      elements.mathRender.innerHTML = payload.tex || "";
+      renderSteps(payload.steps || []);
+      if (payload.plot) drawPlot(payload.plot, payload.kind);
+      if (window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise([elements.mathRender]).catch(() => {});
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderSteps(steps) {
+      elements.stepsList.innerHTML = "";
+      steps.forEach((step) => {
+        const li = document.createElement("li");
+        const icon = document.createElement("i");
+        icon.dataset.lucide = "check-circle-2";
+        const span = document.createElement("span");
+        span.textContent = step;
+        li.append(icon, span);
+        elements.stepsList.append(li);
+      });
+    }
+
+    function drawEmptyPlot() {
+      const ctx = elements.canvas.getContext("2d");
+      const { width, height } = elements.canvas;
+      ctx.clearRect(0, 0, width, height);
+      drawPlotBackground(ctx, width, height, -8, 8, -6, 6);
+    }
+
+    function drawPlot(series, title) {
+      const ctx = elements.canvas.getContext("2d");
+      const { width, height } = elements.canvas;
+      const xMin = -8;
+      const xMax = 8;
+      const samples = 720;
+      const prepared = [];
+      let yMin = Infinity;
+      let yMax = -Infinity;
+
+      series.forEach((item) => {
+        try {
+          const compiled = math.compile(item.expression);
+          const points = [];
+          for (let i = 0; i <= samples; i += 1) {
+            const x = xMin + (xMax - xMin) * (i / samples);
+            const y = Number(compiled.evaluate({ [item.variable]: x }));
+            if (Number.isFinite(y) && Math.abs(y) < 1e6) {
+              yMin = Math.min(yMin, y);
+              yMax = Math.max(yMax, y);
+              points.push({ x, y, valid: true });
+            } else {
+              points.push({ x, y: 0, valid: false });
+            }
+          }
+          prepared.push({ ...item, points });
+        } catch (error) {}
+      });
+
+      if (!prepared.length || !Number.isFinite(yMin) || !Number.isFinite(yMax)) {
+        drawEmptyPlot();
+        elements.plotTitle.textContent = "函数图像";
+        return;
+      }
+
+      const pad = Math.max(1, (yMax - yMin) * 0.14);
+      if (Math.abs(yMax - yMin) < 1e-9) {
+        yMin -= 6;
+        yMax += 6;
+      } else {
+        yMin -= pad;
+        yMax += pad;
+      }
+
+      ctx.clearRect(0, 0, width, height);
+      drawPlotBackground(ctx, width, height, xMin, xMax, yMin, yMax);
+      prepared.forEach((item) => drawLine(ctx, item.points, item.color, width, height, xMin, xMax, yMin, yMax));
+      drawLegend(ctx, prepared);
+      elements.plotTitle.textContent = title || "函数图像";
+    }
+
+    function drawPlotBackground(ctx, width, height, xMin, xMax, yMin, yMax) {
+      ctx.fillStyle = "#151817";
+      ctx.fillRect(0, 0, width, height);
+      ctx.strokeStyle = "rgba(255,255,255,0.07)";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 16; i += 1) {
+        const x = (width * i) / 16;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      for (let i = 0; i <= 10; i += 1) {
+        const y = (height * i) / 10;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+      const axisX = mapX(0, width, xMin, xMax);
+      const axisY = mapY(0, height, yMin, yMax);
+      ctx.strokeStyle = "rgba(255,250,240,0.34)";
+      ctx.lineWidth = 1.5;
+      if (axisX >= 0 && axisX <= width) {
+        ctx.beginPath();
+        ctx.moveTo(axisX, 0);
+        ctx.lineTo(axisX, height);
+        ctx.stroke();
+      }
+      if (axisY >= 0 && axisY <= height) {
+        ctx.beginPath();
+        ctx.moveTo(0, axisY);
+        ctx.lineTo(width, axisY);
+        ctx.stroke();
+      }
+    }
+
+    function drawLine(ctx, points, color, width, height, xMin, xMax, yMin, yMax) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      let drawing = false;
+      points.forEach((point) => {
+        if (!point.valid) {
+          drawing = false;
+          return;
+        }
+        const px = mapX(point.x, width, xMin, xMax);
+        const py = mapY(point.y, height, yMin, yMax);
+        if (!drawing) {
+          ctx.moveTo(px, py);
+          drawing = true;
+        } else {
+          ctx.lineTo(px, py);
+        }
+      });
+      ctx.stroke();
+    }
+
+    function drawLegend(ctx, series) {
+      ctx.save();
+      ctx.font = "14px Consolas, monospace";
+      let x = 18;
+      const y = 26;
+      series.forEach((item) => {
+        ctx.fillStyle = item.color;
+        ctx.fillRect(x, y - 10, 18, 4);
+        ctx.fillStyle = "rgba(255,250,240,0.78)";
+        ctx.fillText(item.label || item.expression, x + 26, y - 4);
+        x += Math.min(240, 86 + (item.label || item.expression).length * 7);
+      });
+      ctx.restore();
+    }
+
+    function mapX(x, width, xMin, xMax) {
+      return ((x - xMin) / (xMax - xMin)) * width;
+    }
+
+    function mapY(y, height, yMin, yMax) {
+      return height - ((y - yMin) / (yMax - yMin)) * height;
+    }
+
+    function saveHistory(kind, input, output) {
+      app.history.unshift({
+        kind,
+        input,
+        output: toDisplay(output),
+        at: new Date().toISOString()
+      });
+      app.history = app.history.slice(0, 8);
+      localStorage.setItem("calc-html-history", JSON.stringify(app.history));
+      renderHistory();
+    }
+
+    function loadHistory() {
+      try {
+        return JSON.parse(localStorage.getItem("calc-html-history") || "[]");
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function renderHistory() {
+      elements.historyList.innerHTML = "";
+      elements.historyCount.textContent = String(app.history.length);
+      if (!app.history.length) {
+        const empty = document.createElement("div");
+        empty.className = "history-item";
+        empty.innerHTML = "<span>暂无记录</span><strong>--</strong>";
+        elements.historyList.append(empty);
+        return;
+      }
+      app.history.forEach((item) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "history-item";
+        button.innerHTML = `<span>${item.kind}</span><strong>${escapeHtml(item.input)} = ${escapeHtml(item.output)}</strong>`;
+        button.addEventListener("click", () => {
+          app.lastResult = item.output;
+          elements.resultValue.textContent = item.output;
+          showToast("历史结果已放入结果区。");
+        });
+        elements.historyList.append(button);
+      });
+    }
+
+    function clearHistory() {
+      app.history = [];
+      localStorage.removeItem("calc-html-history");
+      renderHistory();
+      showToast("历史已清除。");
+    }
+
+    function clearResult() {
+      app.lastResult = "";
+      elements.resultKind.textContent = "READY";
+      elements.resultTime.textContent = "--";
+      elements.resultValue.textContent = "选择一个功能开始计算。";
+      elements.mathRender.innerHTML = "";
+      elements.symbolicValue.textContent = "--";
+      elements.numericValue.textContent = "--";
+      elements.stepsList.innerHTML = "";
+      drawEmptyPlot();
+    }
+
+    function copyResult() {
+      if (!app.lastResult) {
+        showToast("当前没有可复制的结果。");
+        return;
+      }
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(app.lastResult).then(() => showToast("结果已复制。"));
+      } else {
+        showToast(app.lastResult);
+      }
+    }
+
+    function resetMode() {
+      const defaults = {
+        math: () => {
+          $("#mathExpr").value = "sqrt(81)+sin(pi/6)^2+log(100,10)";
+          $("#mathScope").value = "x=3, y=4";
+        },
+        calculus: () => {
+          $("#calcExpr").value = "sin(x)^2 + x^3/3";
+          $("#calcOperation").value = "integral";
+          $("#calcVar").value = "x";
+          $("#calcLower").value = "0";
+          $("#calcUpper").value = "pi";
+          $("#calcLimitPoint").value = "0";
+        },
+        derivative: () => {
+          $("#derivativeExpr").value = "x^4 - 3*x^2 + sin(x)";
+          $("#derivativeVar").value = "x";
+          $("#derivativeOrder").value = "1";
+          $("#derivativePoint").value = "2";
+        },
+        equation: () => {
+          $("#equationExpr").value = "x^2 - 5*x + 6 = 0";
+          $("#equationVars").value = "x";
+        }
+      };
+      defaults[app.mode]();
+      showToast(`${app.names[app.mode]}已重置。`);
+    }
+
+    function showError(error) {
+      setResult({
+        kind: "ERROR",
+        value: error.message || String(error),
+        symbolic: "--",
+        numeric: "--",
+        tex: "",
+        steps: ["检查表达式格式、变量名或网络加载状态。"]
+      });
+      showToast(error.message || String(error));
+    }
+
+    function showToast(message) {
+      elements.toast.textContent = message;
+      elements.toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => elements.toast.classList.remove("show"), 2600);
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    document.addEventListener("DOMContentLoaded", boot);
+  </script>
+</body>
+</html>
