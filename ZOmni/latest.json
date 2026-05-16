@@ -1,0 +1,14 @@
+﻿{
+  "versionName": "4.7.5",
+  "versionCode": 116,
+  "apkUrl": "https://raw.githubusercontent.com/userzhangjie/userzhangjie/main/ZOmni/releases/4.7.5/ZhongyangOmniX-4.7.5.apk",
+  "sha256": "1dc630e221ece19f75cd225c19726c0530f1cadda20b932508a1c151a68fce02",
+  "size": 64939098,
+  "releaseDate": "2026-05-16",
+  "changelog": [
+    "新增 GitHub 在线检查更新与下载安装功能。",
+    "右上角作者页面新增检查更新入口。",
+    "固定应用包名为 com.zhongyang.omnix，后续版本可覆盖更新。",
+    "优化代码生成流式显示，减少生成时卡顿。"
+  ]
+}
