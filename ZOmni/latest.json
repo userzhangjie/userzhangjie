@@ -1,15 +1,13 @@
 ﻿{
-  "versionName": "4.7.6",
-  "versionCode": 117,
-  "apkUrl": "https://raw.githubusercontent.com/userzhangjie/userzhangjie/main/ZOmni/releases/4.7.6/ZhongyangOmniX-4.7.6.apk",
-  "sha256": "668480242eace5b9df1fc914bc78e44efa676bfc00e2cf48de2274fdfbc2b71a",
+  "versionName": "4.7.8",
+  "versionCode": 119,
+  "apkUrl": "https://raw.githubusercontent.com/userzhangjie/userzhangjie/main/ZOmni/releases/4.7.8/ZhongyangOmniX-4.7.8.apk",
+  "sha256": "1e21d5a0477b6eb3ab0166fdf6300334fe87f5b973d98f2571870d5ed9086af8",
   "size": 66156892,
   "releaseDate": "2026-05-16",
   "changelog": [
-    "首次进入软件显示软件介绍，关闭后自动进入文件页面。",
-    "文件页面新增 HTML 文件直接运行按钮。",
-    "新增代码雨.html内置示例，引导体验 HTML 执行器。",
-    "优化 HTML 执行器全屏切换，避免重新加载导致卡顿。",
-    "压缩右上角作者/版本菜单行距。"
+    "代码雨示例改为纯黑背景并降低下落速度。",
+    "修复重新进入软件时历史 HTML 自动弹出执行器的问题。",
+    "在线更新下载时显示下载百分比和实时速度。"
   ]
 }
