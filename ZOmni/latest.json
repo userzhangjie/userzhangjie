@@ -1,13 +1,13 @@
 ﻿{
-  "versionName": "4.7.9",
-  "versionCode": 120,
-  "apkUrl": "https://raw.githubusercontent.com/userzhangjie/userzhangjie/main/ZOmni/releases/4.7.9/ZhongyangOmniX-4.7.9.apk",
-  "sha256": "0ae394c995d88abca8fca76de8053319cea73068f0a75b2b212759df1d3ac9a3",
-  "size": 4687993,
-  "releaseDate": "2026-05-16",
-  "changelog": [
-    "代码雨示例改为纯黑背景。",
-    "代码雨下落速度更慢，更适合作为引导演示。",
-    "优化发布包结构。"
-  ]
+    "versionName":  "4.8.0",
+    "versionCode":  121,
+    "apkUrl":  "https://raw.githubusercontent.com/userzhangjie/userzhangjie/main/ZOmni/releases/4.8.0/ZhongyangOmniX-4.8.0.apk",
+    "sha256":  "37f0e8c5b084f2864be8feb16b8e4c66202c11e8668f0e82367de862b024f62a",
+    "size":  4687993,
+    "releaseDate":  "2026-05-16",
+    "changelog":  [
+                      "内置代码雨示例替换为黑色背景代码雨。",
+                      "优化 HTML 执行器全屏与小窗切换流畅度。",
+                      "改进全屏 canvas 页面适配，减少运行卡顿。"
+                  ]
 }
