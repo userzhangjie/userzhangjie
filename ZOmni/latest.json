@@ -1,14 +1,15 @@
 ﻿{
-  "versionName": "4.7.5",
-  "versionCode": 116,
-  "apkUrl": "https://raw.githubusercontent.com/userzhangjie/userzhangjie/main/ZOmni/releases/4.7.5/ZhongyangOmniX-4.7.5.apk",
-  "sha256": "1dc630e221ece19f75cd225c19726c0530f1cadda20b932508a1c151a68fce02",
-  "size": 64939098,
+  "versionName": "4.7.6",
+  "versionCode": 117,
+  "apkUrl": "https://raw.githubusercontent.com/userzhangjie/userzhangjie/main/ZOmni/releases/4.7.6/ZhongyangOmniX-4.7.6.apk",
+  "sha256": "668480242eace5b9df1fc914bc78e44efa676bfc00e2cf48de2274fdfbc2b71a",
+  "size": 66156892,
   "releaseDate": "2026-05-16",
   "changelog": [
-    "新增 GitHub 在线检查更新与下载安装功能。",
-    "右上角作者页面新增检查更新入口。",
-    "固定应用包名为 com.zhongyang.omnix，后续版本可覆盖更新。",
-    "优化代码生成流式显示，减少生成时卡顿。"
+    "首次进入软件显示软件介绍，关闭后自动进入文件页面。",
+    "文件页面新增 HTML 文件直接运行按钮。",
+    "新增代码雨.html内置示例，引导体验 HTML 执行器。",
+    "优化 HTML 执行器全屏切换，避免重新加载导致卡顿。",
+    "压缩右上角作者/版本菜单行距。"
   ]
 }
