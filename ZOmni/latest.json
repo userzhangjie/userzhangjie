@@ -2,13 +2,12 @@
   "versionName": "4.7.9",
   "versionCode": 120,
   "apkUrl": "https://raw.githubusercontent.com/userzhangjie/userzhangjie/main/ZOmni/releases/4.7.9/ZhongyangOmniX-4.7.9.apk",
-  "sha256": "08889073e3e416a28d51aff61cbc8195dcff8123a54ec5c962483c861e663015",
+  "sha256": "0ae394c995d88abca8fca76de8053319cea73068f0a75b2b212759df1d3ac9a3",
   "size": 4687993,
   "releaseDate": "2026-05-16",
   "changelog": [
-    "上传到 GitHub 的版本为 R8 混淆压缩 Release 包。",
-    "启用代码混淆、代码压缩和资源收缩。",
-    "GitHub 发布目录只保留当前加固版本。",
-    "本地另保留未混淆备份包 beifen.apk，方便后续测试。"
+    "代码雨示例改为纯黑背景。",
+    "代码雨下落速度更慢，更适合作为引导演示。",
+    "优化发布包结构。"
   ]
 }
