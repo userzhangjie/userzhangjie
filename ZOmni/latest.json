@@ -1,13 +1,14 @@
 ﻿{
-  "versionName": "4.7.8",
-  "versionCode": 119,
-  "apkUrl": "https://raw.githubusercontent.com/userzhangjie/userzhangjie/main/ZOmni/releases/4.7.8/ZhongyangOmniX-4.7.8.apk",
-  "sha256": "1e21d5a0477b6eb3ab0166fdf6300334fe87f5b973d98f2571870d5ed9086af8",
-  "size": 66156892,
+  "versionName": "4.7.9",
+  "versionCode": 120,
+  "apkUrl": "https://raw.githubusercontent.com/userzhangjie/userzhangjie/main/ZOmni/releases/4.7.9/ZhongyangOmniX-4.7.9.apk",
+  "sha256": "08889073e3e416a28d51aff61cbc8195dcff8123a54ec5c962483c861e663015",
+  "size": 4687993,
   "releaseDate": "2026-05-16",
   "changelog": [
-    "代码雨示例改为纯黑背景并降低下落速度。",
-    "修复重新进入软件时历史 HTML 自动弹出执行器的问题。",
-    "在线更新下载时显示下载百分比和实时速度。"
+    "上传到 GitHub 的版本为 R8 混淆压缩 Release 包。",
+    "启用代码混淆、代码压缩和资源收缩。",
+    "GitHub 发布目录只保留当前加固版本。",
+    "本地另保留未混淆备份包 beifen.apk，方便后续测试。"
   ]
 }
