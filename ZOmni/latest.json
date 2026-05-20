@@ -1,13 +1,14 @@
 ﻿{
-    "versionName":  "4.8.1",
-    "versionCode":  122,
-    "apkUrl":  "https://raw.githubusercontent.com/userzhangjie/userzhangjie/main/ZOmni/releases/4.8.1/ZhongyangOmniX-4.8.1.apk",
-    "sha256":  "43c71014a6e6b904ee790e2d7a144ebd72d884f461913bfca0533ddf87a3b7e4",
-    "size":  4687993,
-    "releaseDate":  "2026-05-16",
+    "versionName":  "4.8.2",
+    "versionCode":  123,
+    "apkUrl":  "https://raw.githubusercontent.com/userzhangjie/userzhangjie/main/ZOmni/releases/4.8.2/ZhongyangOmniX-4.8.2.apk",
+    "sha256":  "24f00be71b41b511952e0e6dff689d2433744d8c60243b5b051761050cf72bb2",
+    "size":  4704377,
+    "releaseDate":  "2026-05-20",
     "changelog":  [
-                      "更新下载前自动清理旧安装包。",
-                      "新版启动后自动清理已用过的更新安装包。",
-                      "减少更新缓存占用。"
+                      "HTML 执行器改为本地文件加载，长代码页面更容易完整打开。",
+                      "优化 HTML 小窗与全屏运行稳定性。",
+                      "新增 AI 做图能力，支持通过提示词生成图片。",
+                      "设置页新增图片生成模型配置。"
                   ]
 }
